@@ -21,9 +21,11 @@ final class PhotoService: ObservableObject {
         await advance()
     }
 
+    /// PHAccessLevel only offers .addOnly and .readWrite — there is no read-only
+    /// level — so ask for .readWrite even though the hub never writes back.
     private func requestAuthorization() async -> PHAuthorizationStatus {
         await withCheckedContinuation { continuation in
-            PHPhotoLibrary.requestAuthorization(for: .readOnly) { status in
+            PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
                 continuation.resume(returning: status)
             }
         }
