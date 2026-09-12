@@ -61,22 +61,24 @@ jobs:
 
       # Runs on success too: a green build with deprecation warnings still
       # tells you something, and reading it here beats downloading the log.
+      # awk (not grep) because awk exits 0 when nothing matches -- under
+      # `bash -eo pipefail` a no-match grep would fail the whole job, and a
+      # reporting step must never be able to do that. continue-on-error is
+      # the second line of defence for the same reason.
       - name: Diagnostics summary
         if: always()
+        continue-on-error: true
         run: |
-          ERRORS=$(grep -cE "^/.*error: " xcodebuild.log || true)
-          WARNINGS=$(grep -E "^/.*warning: " xcodebuild.log | sort -u | wc -l | tr -d ' ')
-          echo "errors: ${ERRORS:-0}   unique warnings: ${WARNINGS:-0}"
-          if [ "${ERRORS:-0}" != "0" ]; then
-            echo "::group::Errors"
-            grep -E "^/.*error: " xcodebuild.log | sed 's|.*/iPadHomeHub/||' | sort -u | head -100
-            echo "::endgroup::"
-          fi
-          if [ "${WARNINGS:-0}" != "0" ]; then
-            echo "::group::Warnings"
-            grep -E "^/.*warning: " xcodebuild.log | sed 's|.*/iPadHomeHub/||' | sort -u | head -100
-            echo "::endgroup::"
-          fi
+          awk '/^\/.*error: /'   xcodebuild.log | sort -u > errors.txt
+          awk '/^\/.*warning: /' xcodebuild.log | sort -u > warnings.txt
+          echo "errors: $(wc -l < errors.txt | tr -d ' ')   unique warnings: $(wc -l < warnings.txt | tr -d ' ')"
+          for f in errors warnings; do
+            if [ -s "$f.txt" ]; then
+              echo "::group::${f}"
+              sed 's|.*/iPadHomeHub/||' "$f.txt" | head -100
+              echo "::endgroup::"
+            fi
+          done
 
       - name: Upload build log
         if: always()
