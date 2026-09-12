@@ -1,0 +1,402 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5EB0021F9EE21195F8156F73 /* HomeHubApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7939265CA08D14FF25B031 /* HomeHubApp.swift */; };
+		B9C1535C307A80F5BEEF5F59 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 313E73222E70D3B9F4E6B81D /* RootView.swift */; };
+		E10B64CDE04FD0B5230FBE60 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0CEDE6F6135C933AA7F595 /* Theme.swift */; };
+		33718EA68623DF533A738EAE /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75738674787D498D3A6AFB9 /* Keychain.swift */; };
+		1FF9CF77824DFAECA6FC3454 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1CC119ABA2DCB973F9AC9F7 /* Settings.swift */; };
+		89FDEBE95689C920ABE27424 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E9BDF5C7726332838B98EB /* SettingsView.swift */; };
+		8F14E46E62148B5FC5E96A5E /* BoardItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 605F831BE85A424A29BB0BD1 /* BoardItems.swift */; };
+		E08890DECD9845D3940DA0E1 /* HAEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B103F7E007E5F8D97B08504 /* HAEntity.swift */; };
+		E36B39CE6D239C0A0E1E1FD7 /* WeatherModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49FB8822151FD8C32DF7360A /* WeatherModels.swift */; };
+		62DC78CD296BF9A3BEE3F2E9 /* AssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D357E8CB85C756FDB23EFC42 /* AssistantView.swift */; };
+		2E07B0A5D8F2755B3C6D6640 /* CalendarPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E69609ACF86639DC3E88ED0 /* CalendarPanel.swift */; };
+		BDD8FD8E6D5537B90F1EFC7A /* ChoresPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8374D0A0374719B08C1DF672 /* ChoresPanel.swift */; };
+		440595EAC7AB46564559EA19 /* ClockPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62CC25409B32F42BDD94A668 /* ClockPanel.swift */; };
+		A4B2E2F07C559A568165C80D /* HomeControlsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B6FE887A0CE26E71554153 /* HomeControlsPanel.swift */; };
+		D2AC242C994127D684366DC4 /* NotesPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAE79045699286CF398461B /* NotesPanel.swift */; };
+		4D5ED8A092CB4E58F259D8DC /* ScreensaverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06637E5A197B8F8ED7D459B /* ScreensaverView.swift */; };
+		2F16FA0F13B415623D2CE8C4 /* WeatherPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B318A80B3D382B5170D9DF /* WeatherPanel.swift */; };
+		9098D6C5FCD03A415BBF5C4A /* BoardStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A234E6AA2E113781BDEBD7ED /* BoardStore.swift */; };
+		C59233B22E3B0143CEBB2F5F /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1643058C785CA5FD4C7D25F8 /* CalendarService.swift */; };
+		A1118D04FCEEDE2E31B702EA /* GeminiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4920F6EB67667CA4595B893 /* GeminiClient.swift */; };
+		FA27DA0CAEDF1B0295358B25 /* HomeAssistantClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060FB77FDCE50F33325CE76F /* HomeAssistantClient.swift */; };
+		32A4E24E8336999155DC1154 /* HomeKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EC95316C432D443358F25B1 /* HomeKitService.swift */; };
+		0663FB8DAB17AC0EB30B40D3 /* PhotoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10200633768C26E44299955C /* PhotoService.swift */; };
+		16E85BF9FA16A90E6475931D /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A9AB2EF645C6819D9B3D464 /* WeatherService.swift */; };
+		5416F7C36169980C8455A803 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE6DC5AB9F57F1911D69CCB9 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		8BB0B33237326FBEA2A04535 /* HomeHub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HomeHub.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BD7939265CA08D14FF25B031 /* HomeHubApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeHubApp.swift; sourceTree = "<group>"; };
+		313E73222E70D3B9F4E6B81D /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		CC0CEDE6F6135C933AA7F595 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		F75738674787D498D3A6AFB9 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		D1CC119ABA2DCB973F9AC9F7 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		E7E9BDF5C7726332838B98EB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		605F831BE85A424A29BB0BD1 /* BoardItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardItems.swift; sourceTree = "<group>"; };
+		4B103F7E007E5F8D97B08504 /* HAEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HAEntity.swift; sourceTree = "<group>"; };
+		49FB8822151FD8C32DF7360A /* WeatherModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherModels.swift; sourceTree = "<group>"; };
+		D357E8CB85C756FDB23EFC42 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
+		4E69609ACF86639DC3E88ED0 /* CalendarPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarPanel.swift; sourceTree = "<group>"; };
+		8374D0A0374719B08C1DF672 /* ChoresPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresPanel.swift; sourceTree = "<group>"; };
+		62CC25409B32F42BDD94A668 /* ClockPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockPanel.swift; sourceTree = "<group>"; };
+		92B6FE887A0CE26E71554153 /* HomeControlsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeControlsPanel.swift; sourceTree = "<group>"; };
+		EBAE79045699286CF398461B /* NotesPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesPanel.swift; sourceTree = "<group>"; };
+		B06637E5A197B8F8ED7D459B /* ScreensaverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreensaverView.swift; sourceTree = "<group>"; };
+		E4B318A80B3D382B5170D9DF /* WeatherPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherPanel.swift; sourceTree = "<group>"; };
+		A234E6AA2E113781BDEBD7ED /* BoardStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardStore.swift; sourceTree = "<group>"; };
+		1643058C785CA5FD4C7D25F8 /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
+		A4920F6EB67667CA4595B893 /* GeminiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiClient.swift; sourceTree = "<group>"; };
+		060FB77FDCE50F33325CE76F /* HomeAssistantClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeAssistantClient.swift; sourceTree = "<group>"; };
+		7EC95316C432D443358F25B1 /* HomeKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeKitService.swift; sourceTree = "<group>"; };
+		10200633768C26E44299955C /* PhotoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoService.swift; sourceTree = "<group>"; };
+		7A9AB2EF645C6819D9B3D464 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
+		EE6DC5AB9F57F1911D69CCB9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9A4EEFB8FA6E81D0B57FABB3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		29F18B8A4B615945370ADD85 /* HomeHub.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HomeHub.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		57E1D1937088B5B208E11C3F /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				F75738674787D498D3A6AFB9 /* Keychain.swift */,
+				D1CC119ABA2DCB973F9AC9F7 /* Settings.swift */,
+				E7E9BDF5C7726332838B98EB /* SettingsView.swift */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		67CA5B56B9FBCF7852FAF98A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				605F831BE85A424A29BB0BD1 /* BoardItems.swift */,
+				4B103F7E007E5F8D97B08504 /* HAEntity.swift */,
+				49FB8822151FD8C32DF7360A /* WeatherModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F92D51FBFFD4B24427645BA7 /* Panels */ = {
+			isa = PBXGroup;
+			children = (
+				D357E8CB85C756FDB23EFC42 /* AssistantView.swift */,
+				4E69609ACF86639DC3E88ED0 /* CalendarPanel.swift */,
+				8374D0A0374719B08C1DF672 /* ChoresPanel.swift */,
+				62CC25409B32F42BDD94A668 /* ClockPanel.swift */,
+				92B6FE887A0CE26E71554153 /* HomeControlsPanel.swift */,
+				EBAE79045699286CF398461B /* NotesPanel.swift */,
+				B06637E5A197B8F8ED7D459B /* ScreensaverView.swift */,
+				E4B318A80B3D382B5170D9DF /* WeatherPanel.swift */,
+			);
+			path = Panels;
+			sourceTree = "<group>";
+		};
+		9953C8E7244BC3E27212396E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				EE6DC5AB9F57F1911D69CCB9 /* Assets.xcassets */,
+				29F18B8A4B615945370ADD85 /* HomeHub.entitlements */,
+				9A4EEFB8FA6E81D0B57FABB3 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		16666C077A95473964B8B995 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A234E6AA2E113781BDEBD7ED /* BoardStore.swift */,
+				1643058C785CA5FD4C7D25F8 /* CalendarService.swift */,
+				A4920F6EB67667CA4595B893 /* GeminiClient.swift */,
+				060FB77FDCE50F33325CE76F /* HomeAssistantClient.swift */,
+				7EC95316C432D443358F25B1 /* HomeKitService.swift */,
+				10200633768C26E44299955C /* PhotoService.swift */,
+				7A9AB2EF645C6819D9B3D464 /* WeatherService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		5724A2816B7542189F092F7A /* HomeHub */ = {
+			isa = PBXGroup;
+			children = (
+				57E1D1937088B5B208E11C3F /* Config */,
+				67CA5B56B9FBCF7852FAF98A /* Models */,
+				F92D51FBFFD4B24427645BA7 /* Panels */,
+				9953C8E7244BC3E27212396E /* Resources */,
+				16666C077A95473964B8B995 /* Services */,
+				BD7939265CA08D14FF25B031 /* HomeHubApp.swift */,
+				313E73222E70D3B9F4E6B81D /* RootView.swift */,
+				CC0CEDE6F6135C933AA7F595 /* Theme.swift */,
+			);
+			path = HomeHub;
+			sourceTree = "<group>";
+		};
+		57FDE28149161EE9A0E30ECB = {
+			isa = PBXGroup;
+			children = (
+				5724A2816B7542189F092F7A /* HomeHub */,
+				E8B77B4240F92D061BFD9B36 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E8B77B4240F92D061BFD9B36 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8BB0B33237326FBEA2A04535 /* HomeHub.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EA8594C83D82D703505DFABE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXResourcesBuildPhase section */
+		16B6DB84760A9CCAF0F0E448 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5416F7C36169980C8455A803 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		80DAA310FC779194862C0D32 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5EB0021F9EE21195F8156F73 /* HomeHubApp.swift in Sources */,
+				B9C1535C307A80F5BEEF5F59 /* RootView.swift in Sources */,
+				E10B64CDE04FD0B5230FBE60 /* Theme.swift in Sources */,
+				33718EA68623DF533A738EAE /* Keychain.swift in Sources */,
+				1FF9CF77824DFAECA6FC3454 /* Settings.swift in Sources */,
+				89FDEBE95689C920ABE27424 /* SettingsView.swift in Sources */,
+				8F14E46E62148B5FC5E96A5E /* BoardItems.swift in Sources */,
+				E08890DECD9845D3940DA0E1 /* HAEntity.swift in Sources */,
+				E36B39CE6D239C0A0E1E1FD7 /* WeatherModels.swift in Sources */,
+				62DC78CD296BF9A3BEE3F2E9 /* AssistantView.swift in Sources */,
+				2E07B0A5D8F2755B3C6D6640 /* CalendarPanel.swift in Sources */,
+				BDD8FD8E6D5537B90F1EFC7A /* ChoresPanel.swift in Sources */,
+				440595EAC7AB46564559EA19 /* ClockPanel.swift in Sources */,
+				A4B2E2F07C559A568165C80D /* HomeControlsPanel.swift in Sources */,
+				D2AC242C994127D684366DC4 /* NotesPanel.swift in Sources */,
+				4D5ED8A092CB4E58F259D8DC /* ScreensaverView.swift in Sources */,
+				2F16FA0F13B415623D2CE8C4 /* WeatherPanel.swift in Sources */,
+				9098D6C5FCD03A415BBF5C4A /* BoardStore.swift in Sources */,
+				C59233B22E3B0143CEBB2F5F /* CalendarService.swift in Sources */,
+				A1118D04FCEEDE2E31B702EA /* GeminiClient.swift in Sources */,
+				FA27DA0CAEDF1B0295358B25 /* HomeAssistantClient.swift in Sources */,
+				32A4E24E8336999155DC1154 /* HomeKitService.swift in Sources */,
+				0663FB8DAB17AC0EB30B40D3 /* PhotoService.swift in Sources */,
+				16E85BF9FA16A90E6475931D /* WeatherService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		593A88083C25F375F6CFE8BB /* HomeHub */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ADA8AAA82D482A5327115063 /* Build configuration list for PBXNativeTarget "HomeHub" */;
+			buildPhases = (
+				80DAA310FC779194862C0D32 /* Sources */,
+				EA8594C83D82D703505DFABE /* Frameworks */,
+				16B6DB84760A9CCAF0F0E448 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HomeHub;
+			productName = HomeHub;
+			productReference = 8BB0B33237326FBEA2A04535 /* HomeHub.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		96A0911D57F6838D752422D6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					593A88083C25F375F6CFE8BB = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = BEE1607168D4EBCB69E53BCE /* Build configuration list for PBXProject "HomeHub" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 57FDE28149161EE9A0E30ECB;
+			productRefGroup = E8B77B4240F92D061BFD9B36 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				593A88083C25F375F6CFE8BB /* HomeHub */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		79202D6F05A2EB0B50AEA796 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BA9524E20EE286DFD03FCC44 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AF9D2D27DADC25B267ED81C6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = HomeHub/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.homehub;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7D8C6F6E45786682C7D8EF1D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = HomeHub/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.homehub;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BEE1607168D4EBCB69E53BCE /* Build configuration list for PBXProject "HomeHub" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				79202D6F05A2EB0B50AEA796 /* Debug */,
+				BA9524E20EE286DFD03FCC44 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ADA8AAA82D482A5327115063 /* Build configuration list for PBXNativeTarget "HomeHub" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AF9D2D27DADC25B267ED81C6 /* Debug */,
+				7D8C6F6E45786682C7D8EF1D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = 96A0911D57F6838D752422D6 /* Project object */;
+}
