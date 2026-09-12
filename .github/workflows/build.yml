@@ -59,12 +59,24 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             build 2>&1 | tee xcodebuild.log
 
-      - name: Error summary
-        if: failure()
+      # Runs on success too: a green build with deprecation warnings still
+      # tells you something, and reading it here beats downloading the log.
+      - name: Diagnostics summary
+        if: always()
         run: |
-          echo "::group::Compiler errors"
-          grep -E "^/.*(error|warning): " xcodebuild.log | sort -u | head -200 || true
-          echo "::endgroup::"
+          ERRORS=$(grep -cE "^/.*error: " xcodebuild.log || true)
+          WARNINGS=$(grep -E "^/.*warning: " xcodebuild.log | sort -u | wc -l | tr -d ' ')
+          echo "errors: ${ERRORS:-0}   unique warnings: ${WARNINGS:-0}"
+          if [ "${ERRORS:-0}" != "0" ]; then
+            echo "::group::Errors"
+            grep -E "^/.*error: " xcodebuild.log | sed 's|.*/iPadHomeHub/||' | sort -u | head -100
+            echo "::endgroup::"
+          fi
+          if [ "${WARNINGS:-0}" != "0" ]; then
+            echo "::group::Warnings"
+            grep -E "^/.*warning: " xcodebuild.log | sed 's|.*/iPadHomeHub/||' | sort -u | head -100
+            echo "::endgroup::"
+          fi
 
       - name: Upload build log
         if: always()
