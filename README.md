@@ -26,6 +26,21 @@ of what the hub currently knows — time, weather, the next few calendar events,
 open chores — so household questions ("do I need a jacket?", "what's on today?")
 get answered against real data instead of guesses.
 
+## Screen sizes
+
+The dashboard picks its layout from the available width, not the device, so a
+12.9" in portrait and a 10.2" in landscape get the same treatment:
+
+| Width | Layout | Typical |
+| --- | --- | --- |
+| ≥ 1150pt | three columns | 12.9" / 11" landscape |
+| ≥ 800pt | two columns, page scrolls | 12.9" portrait, 9.7" / 10.2" landscape |
+| < 800pt | single column | smaller iPads in portrait |
+
+Anything back to an iPad Air 2 or iPad mini 4 will run it — those are the oldest
+models that reach iPadOS 15. An iPad Air 1 or iPad 4 and older cap out at
+iOS 12 and cannot.
+
 ## Install without a Mac (or with an old one)
 
 A Mac that can't run Xcode 15 — anything pre-2014, which caps out at macOS

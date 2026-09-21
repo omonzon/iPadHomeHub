@@ -63,40 +63,124 @@ struct RootView: View {
 
     // MARK: - Layout
 
+    /// Layout is chosen by width, not by device: a 12.9" in portrait and a
+    /// 10.2" in landscape are the same problem. Three columns need real estate;
+    /// below that, fold the grid rather than shrink everything.
+    private enum LayoutMode {
+        case wide       // 12.9"/11" landscape — three columns
+        case medium     // 12.9" portrait, 9.7"/10.2" landscape — two columns
+        case compact    // smaller iPads in portrait — one column
+
+        init(width: CGFloat) {
+            if width >= 1150 {
+                self = .wide
+            } else if width >= 800 {
+                self = .medium
+            } else {
+                self = .compact
+            }
+        }
+    }
+
     private var dashboard: some View {
         VStack(spacing: 16) {
             toolbar
             GeometryReader { geometry in
-                HStack(alignment: .top, spacing: 16) {
-                    VStack(spacing: 16) {
-                        ClockPanel(use24Hour: settings.settings.use24HourClock,
-                                   showSeconds: settings.settings.showSeconds)
-                        WeatherPanel(service: weather,
-                                     locationName: settings.settings.locationName,
-                                     fahrenheit: settings.settings.useFahrenheit)
-                        Spacer(minLength: 0)
-                    }
-                    .frame(width: geometry.size.width * 0.31)
-
-                    VStack(spacing: 16) {
-                        CalendarPanel(service: calendar)
-                            .frame(maxHeight: geometry.size.height * 0.55)
-                        NotesPanel()
-                        Spacer(minLength: 0)
-                    }
-                    .frame(width: geometry.size.width * 0.34)
-
-                    VStack(spacing: 16) {
-                        homeControls
-                            .frame(maxHeight: geometry.size.height * 0.55)
-                        ChoresPanel()
-                        Spacer(minLength: 0)
-                    }
-                }
+                layout(for: geometry)
             }
         }
         .padding(20)
     }
+
+    @ViewBuilder
+    private func layout(for geometry: GeometryProxy) -> some View {
+        switch LayoutMode(width: geometry.size.width) {
+        case .wide:    wideLayout(geometry)
+        case .medium:  mediumLayout()
+        case .compact: compactLayout()
+        }
+    }
+
+    /// Everything fits the viewport; only panels that manage their own
+    /// overflow scroll.
+    private func wideLayout(_ geometry: GeometryProxy) -> some View {
+        HStack(alignment: .top, spacing: 16) {
+            VStack(spacing: 16) {
+                clockPanel
+                weatherPanel
+                Spacer(minLength: 0)
+            }
+            .frame(width: geometry.size.width * 0.31)
+
+            VStack(spacing: 16) {
+                calendarPanel.frame(maxHeight: geometry.size.height * 0.55)
+                notesPanel
+                Spacer(minLength: 0)
+            }
+            .frame(width: geometry.size.width * 0.34)
+
+            VStack(spacing: 16) {
+                homeControls.frame(maxHeight: geometry.size.height * 0.55)
+                choresPanel
+                Spacer(minLength: 0)
+            }
+        }
+    }
+
+    /// Two columns that scroll as a page. The panels that scroll internally get
+    /// explicit heights so they stay bounded inside the outer scroll view.
+    private func mediumLayout() -> some View {
+        ScrollView(showsIndicators: false) {
+            HStack(alignment: .top, spacing: 16) {
+                VStack(spacing: 16) {
+                    clockPanel
+                    weatherPanel
+                    choresPanel.frame(height: 300)
+                }
+                .frame(maxWidth: .infinity)
+
+                VStack(spacing: 16) {
+                    calendarPanel.frame(height: 340)
+                    homeControls.frame(height: 300)
+                    notesPanel.frame(height: 260)
+                }
+                .frame(maxWidth: .infinity)
+            }
+        }
+    }
+
+    /// One column, everything stacked. Clock and weather keep their natural
+    /// height so the top of the screen still reads at a glance from across
+    /// the room.
+    private func compactLayout() -> some View {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 16) {
+                clockPanel
+                weatherPanel
+                calendarPanel.frame(height: 320)
+                homeControls.frame(height: 300)
+                choresPanel.frame(height: 280)
+                notesPanel.frame(height: 260)
+            }
+        }
+    }
+
+    // MARK: - Panels
+
+    private var clockPanel: some View {
+        ClockPanel(use24Hour: settings.settings.use24HourClock,
+                   showSeconds: settings.settings.showSeconds)
+    }
+
+    private var weatherPanel: some View {
+        WeatherPanel(service: weather,
+                     locationName: settings.settings.locationName,
+                     fahrenheit: settings.settings.useFahrenheit)
+    }
+
+    private var calendarPanel: some View { CalendarPanel(service: calendar) }
+    private var choresPanel: some View { ChoresPanel() }
+    private var notesPanel: some View { NotesPanel() }
 
     @ViewBuilder
     private var homeControls: some View {
