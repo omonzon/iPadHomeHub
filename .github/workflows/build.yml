@@ -18,6 +18,9 @@ on:
         description: Compile in HomeKit support (needs a paid account to install)
         type: boolean
         default: false
+      release_tag:
+        description: Publish a release at this tag (e.g. v1.0). Blank = just build.
+        default: ''
 
 permissions:
   contents: write
@@ -105,10 +108,19 @@ jobs:
           path: HomeHub.ipa
           if-no-files-found: error
 
-      - name: Attach to release
-        if: startsWith(github.ref, 'refs/tags/v')
+      # Fires on a v* tag push, or on a manual run given a release_tag.
+      # `gh release create` creates the tag at --target when it doesn't exist,
+      # so a release can be cut without pushing a tag first.
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.release_tag != '')
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" HomeHub.ipa --generate-notes \
-            || gh release upload "$GITHUB_REF_NAME" HomeHub.ipa --clobber
+          TAG="${{ inputs.release_tag }}"
+          [ -n "$TAG" ] || TAG="$GITHUB_REF_NAME"
+          echo "publishing $TAG at $GITHUB_SHA"
+          gh release create "$TAG" HomeHub.ipa \
+              --target "$GITHUB_SHA" \
+              --title "Home Hub $TAG" \
+              --notes-file .github/release-notes.md \
+            || gh release upload "$TAG" HomeHub.ipa --clobber
