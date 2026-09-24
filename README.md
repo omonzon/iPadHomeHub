@@ -41,32 +41,66 @@ Anything back to an iPad Air 2 or iPad mini 4 will run it — those are the olde
 models that reach iPadOS 15. An iPad Air 1 or iPad 4 and older cap out at
 iOS 12 and cannot.
 
-## Install without a Mac (or with an old one)
+## Install without a current Mac
 
-A Mac that can't run Xcode 15 — anything pre-2014, which caps out at macOS
-Catalina — can still put this on an iPad. Building and installing are separate
-problems, and only the first one needs a modern Mac.
+Building and installing are separate problems, and only building needs a
+modern Mac — which CI provides. `.github/workflows/build.yml` builds on a
+GitHub macOS runner on every push. What it produces depends on whether signing
+secrets are configured.
 
-1. **CI builds the `.ipa`.** `.github/workflows/build.yml` builds on a GitHub
-   macOS runner and uploads the result as an artifact. It builds *unsigned* on
-   purpose — no certificates, no secrets. Grab it from the run's Artifacts
-   section, or push a `v*` tag to get it attached to a Release as a plain
-   download link.
-2. **[AltStore](https://altstore.io) installs it.** AltServer runs on macOS
-   10.14.4+, so Catalina is fine. It re-signs the app with your own Apple ID at
-   install time, which is why the CI build doesn't need to sign anything.
-3. **It refreshes itself.** AltStore renews the 7-day signature over Wi-Fi as
-   long as AltServer is running on the same network. If that machine is a
-   home server that's always on, the app just keeps working — no cable, no
-   monthly ritual, no $99.
+### Ad hoc signed (paid developer account) — best for a wall device
 
-[SideStore](https://sidestore.io) does the same refresh on-device with no
-computer at all after a one-time pairing, if you'd rather not depend on a Mac
-being awake.
+With an Apple Developer Program membership, CI signs the `.ipa` for the
+specific iPads registered in the profile. It installs by dragging it onto the
+iPad in Finder, stays valid for a year, and needs no AltStore, no weekly
+refresh and no Developer Mode.
 
-The catch: HomeKit needs an entitlement only issued to paid developer accounts,
-and AltStore can't conjure one. Home Assistant covers the same ground through
-its API, so in practice you lose little.
+The membership doesn't have to be yours, and its holder doesn't have to be
+anywhere near the iPad — everything on their side happens in a browser, and the
+private key never leaves your Mac:
+
+1. **You:** copy the iPad's UDID from Finder (click the grey line under the
+   device name until it shows the UDID). Create a certificate signing request
+   in Keychain Access › Certificate Assistant › *Request a Certificate From a
+   Certificate Authority* › *Saved to disk*. Send both — neither is secret.
+2. **Account holder, on developer.apple.com:** register the UDID under
+   *Devices*; create an explicit App ID under *Identifiers*; create an
+   *Apple Distribution* certificate from your CSR; create an *Ad Hoc* profile
+   for that App ID, certificate and device. Send back the `.cer` and the
+   `.mobileprovision` — neither is secret without your private key.
+3. **You:** double-click the `.cer` to pair it with your key, then in Keychain
+   Access › *My Certificates* export it as a `.p12` with a password.
+4. **Add three repository secrets** (*Settings › Secrets and variables ›
+   Actions*):
+
+   ```sh
+   base64 -i Certificates.p12 | pbcopy          # paste as SIGNING_CERT_P12
+   base64 -i HomeHub_AdHoc.mobileprovision | pbcopy   # paste as ADHOC_PROFILE
+   ```
+
+   plus `SIGNING_CERT_PASSWORD`. The team and bundle IDs are read from the
+   profile, so there is nothing else to keep in sync.
+
+The next build uploads `HomeHub-adhoc-ipa`. Renew once a year by repeating
+steps 1–4. If the profile carries the HomeKit entitlement, HomeKit is compiled
+in automatically. Releases stay unsigned: a signed `.ipa` embeds its profile,
+which lists the registered devices.
+
+### Unsigned + AltStore (free Apple ID)
+
+Without secrets CI builds *unsigned*, and [AltStore](https://altstore.io)
+re-signs the app with your own Apple ID at install time, renewing the 7-day
+signature over Wi-Fi while AltServer runs on the same network.
+[SideStore](https://sidestore.io) does the refresh on-device instead.
+
+**This needs AltServer 1.7.6 or newer, and AltServer 1.7+ requires macOS 11.**
+Since early September 2026 Apple's sign-in servers reject older AltServer
+builds with *"The data is not in the correct format"*. AltServer 1.6.2 — the
+last release for macOS 10.14 and 10.15 — cannot sign in any more, so a Mac on
+Catalina can't use this route. A Windows PC with a current AltServer can.
+
+HomeKit is not available this way: its entitlement is only issued to paid
+developer accounts.
 
 ## Build and install with Xcode
 

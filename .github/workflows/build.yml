@@ -1,8 +1,20 @@
 name: Build IPA
 
-# Builds an unsigned .ipa on a macOS runner. Unsigned is deliberate: AltStore
-# re-signs with your own Apple ID when it installs, so no certificates or
-# secrets are needed here.
+# Builds the app on a macOS runner, in one of two shapes:
+#
+# - Unsigned (default). AltStore or SideStore re-signs it with the installer's
+#   own Apple ID, so no certificates or secrets are needed here.
+# - Ad hoc signed, when the three secrets below exist. Installs on the devices
+#   named in the profile by dragging the .ipa onto the iPad in Finder -- no
+#   AltStore, no 7-day refresh, no Developer Mode -- and stays valid until the
+#   profile or certificate expires (a year).
+#
+# Secrets (Settings > Secrets and variables > Actions):
+#   SIGNING_CERT_P12       base64 of an Apple Distribution certificate + key (.p12)
+#   SIGNING_CERT_PASSWORD  the password the .p12 was exported with
+#   ADHOC_PROFILE          base64 of an Ad Hoc .mobileprovision
+# The team ID and bundle ID are read from the profile, so they cannot drift
+# out of step with it.
 
 on:
   push:
@@ -12,7 +24,7 @@ on:
   workflow_dispatch:
     inputs:
       bundle_id:
-        description: Bundle identifier to build with
+        description: Bundle identifier for unsigned builds (signed builds use the profile's)
         default: com.omonzon.homehub
       homekit:
         description: Compile in HomeKit support (needs a paid account to install)
@@ -29,6 +41,11 @@ defaults:
   run:
     shell: bash
 
+env:
+  # Releases are public, so they always carry the unsigned build: a signed .ipa
+  # embeds its profile, which lists the registered devices and the team.
+  IS_RELEASE: ${{ startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.release_tag != '') }}
+
 jobs:
   build:
     runs-on: macos-15
@@ -41,15 +58,87 @@ jobs:
           xcodebuild -version
           swift --version
 
+      - name: Signing setup
+        id: signing
+        env:
+          CERT_P12: ${{ secrets.SIGNING_CERT_P12 }}
+          CERT_PASSWORD: ${{ secrets.SIGNING_CERT_PASSWORD }}
+          PROFILE: ${{ secrets.ADHOC_PROFILE }}
+        run: |
+          if [ -z "$CERT_P12" ] || [ -z "$PROFILE" ]; then
+            echo "No signing secrets -- building unsigned."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$IS_RELEASE" = "true" ]; then
+            echo "Release run -- building unsigned for the public release."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # A throwaway keychain holds the certificate for this job only.
+          KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
+          KEYCHAIN_PASSWORD="$(uuidgen)"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+
+          printf '%s' "$CERT_P12" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security import "$RUNNER_TEMP/cert.p12" -P "$CERT_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN"
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" > /dev/null
+          security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+          rm -f "$RUNNER_TEMP/cert.p12"
+
+          PROFILE_PATH="$RUNNER_TEMP/profile.mobileprovision"
+          printf '%s' "$PROFILE" | base64 --decode > "$PROFILE_PATH"
+          security cms -D -i "$PROFILE_PATH" > "$RUNNER_TEMP/profile.plist"
+          pb() { /usr/libexec/PlistBuddy -c "Print :$1" "$RUNNER_TEMP/profile.plist" 2>/dev/null; }
+
+          UUID=$(pb UUID)
+          NAME=$(pb Name)
+          TEAM=$(pb TeamIdentifier:0)
+          APP_ID=$(pb Entitlements:application-identifier)
+          BUNDLE="${APP_ID#"$TEAM".}"
+          # A wildcard App ID signs any bundle under its prefix.
+          case "$BUNDLE" in
+            '*')  BUNDLE="com.omonzon.homehub" ;;
+            *'*') BUNDLE="${BUNDLE%'*'}homehub" ;;
+          esac
+          HOMEKIT=$(pb Entitlements:com.apple.developer.homekit || true)
+
+          # Xcode 16 reads profiles from UserData; older Xcodes from MobileDevice.
+          for dir in "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles" \
+                     "$HOME/Library/MobileDevice/Provisioning Profiles"; do
+            mkdir -p "$dir"
+            cp "$PROFILE_PATH" "$dir/$UUID.mobileprovision"
+          done
+
+          echo "Signing: team $TEAM, bundle $BUNDLE, profile \"$NAME\", expires $(pb ExpirationDate)"
+          {
+            echo "enabled=true"
+            echo "team=$TEAM"
+            echo "bundle=$BUNDLE"
+            echo "profile=$NAME"
+            echo "keychain=$KEYCHAIN"
+            echo "homekit=$HOMEKIT"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Generate Xcode project
         run: |
-          FLAGS=""
-          if [ "${{ inputs.homekit }}" = "true" ]; then FLAGS="--homekit"; fi
-          python3 Scripts/generate_project.py \
-            --bundle-id "${{ inputs.bundle_id || 'com.omonzon.homehub' }}" \
-            $FLAGS
+          ARGS=()
+          if [ "${{ steps.signing.outputs.enabled }}" = "true" ]; then
+            ARGS+=(--bundle-id "${{ steps.signing.outputs.bundle }}" --team "${{ steps.signing.outputs.team }}")
+          else
+            ARGS+=(--bundle-id "${{ inputs.bundle_id || 'com.omonzon.homehub' }}")
+          fi
+          # A profile that carries the HomeKit entitlement turns HomeKit on.
+          if [ "${{ inputs.homekit }}" = "true" ] || [ "${{ steps.signing.outputs.homekit }}" = "true" ]; then
+            ARGS+=(--homekit)
+          fi
+          python3 Scripts/generate_project.py "${ARGS[@]}"
 
       - name: Build (unsigned)
+        if: steps.signing.outputs.enabled != 'true'
         run: |
           xcodebuild \
             -project HomeHub.xcodeproj \
@@ -62,6 +151,58 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             build 2>&1 | tee xcodebuild.log
 
+      - name: Build and export (ad hoc)
+        if: steps.signing.outputs.enabled == 'true'
+        env:
+          TEAM: ${{ steps.signing.outputs.team }}
+          BUNDLE: ${{ steps.signing.outputs.bundle }}
+          PROFILE_NAME: ${{ steps.signing.outputs.profile }}
+          KEYCHAIN: ${{ steps.signing.outputs.keychain }}
+        run: |
+          xcodebuild \
+            -project HomeHub.xcodeproj \
+            -scheme HomeHub \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            -archivePath build/HomeHub.xcarchive \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="$TEAM" \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
+            OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN" \
+            archive 2>&1 | tee xcodebuild.log
+
+          # "release-testing" is Xcode 15.3+'s name for the ad hoc method.
+          cat > build/ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>release-testing</string>
+            <key>teamID</key>
+            <string>$TEAM</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>$BUNDLE</key>
+              <string>$PROFILE_NAME</string>
+            </dict>
+            <key>thinning</key>
+            <string>&lt;none&gt;</string>
+          </dict>
+          </plist>
+          EOF
+
+          xcodebuild -exportArchive \
+            -archivePath build/HomeHub.xcarchive \
+            -exportOptionsPlist build/ExportOptions.plist \
+            -exportPath build/export 2>&1 | tee -a xcodebuild.log
+
       # Runs on success too: a green build with deprecation warnings still
       # tells you something, and reading it here beats downloading the log.
       # awk (not grep) because awk exits 0 when nothing matches -- under
@@ -72,8 +213,9 @@ jobs:
         if: always()
         continue-on-error: true
         run: |
-          awk '/^\/.*error: /'   xcodebuild.log | sort -u > errors.txt
-          awk '/^\/.*warning: /' xcodebuild.log | sort -u > warnings.txt
+          touch xcodebuild.log
+          awk '/^\/.*error: |^error: /' xcodebuild.log | sort -u > errors.txt
+          awk '/^\/.*warning: /'        xcodebuild.log | sort -u > warnings.txt
           echo "errors: $(wc -l < errors.txt | tr -d ' ')   unique warnings: $(wc -l < warnings.txt | tr -d ' ')"
           for f in errors warnings; do
             if [ -s "$f.txt" ]; then
@@ -93,18 +235,24 @@ jobs:
 
       - name: Package .ipa
         run: |
-          APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name '*.app' | head -1)
-          if [ -z "$APP" ]; then echo "No .app was produced"; exit 1; fi
-          rm -rf Payload
-          mkdir -p Payload
-          cp -R "$APP" Payload/
-          zip -qry HomeHub.ipa Payload
+          if [ "${{ steps.signing.outputs.enabled }}" = "true" ]; then
+            IPA=$(find build/export -maxdepth 1 -name '*.ipa' | head -1)
+            if [ -z "$IPA" ]; then echo "Export produced no .ipa"; exit 1; fi
+            cp "$IPA" HomeHub.ipa
+          else
+            APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name '*.app' | head -1)
+            if [ -z "$APP" ]; then echo "No .app was produced"; exit 1; fi
+            rm -rf Payload
+            mkdir -p Payload
+            cp -R "$APP" Payload/
+            zip -qry HomeHub.ipa Payload
+          fi
           ls -lh HomeHub.ipa
 
       - name: Upload .ipa
         uses: actions/upload-artifact@v4
         with:
-          name: HomeHub-ipa
+          name: ${{ steps.signing.outputs.enabled == 'true' && 'HomeHub-adhoc-ipa' || 'HomeHub-ipa' }}
           path: HomeHub.ipa
           if-no-files-found: error
 
@@ -112,7 +260,7 @@ jobs:
       # `gh release create` creates the tag at --target when it doesn't exist,
       # so a release can be cut without pushing a tag first.
       - name: Publish release
-        if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.release_tag != '')
+        if: env.IS_RELEASE == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -124,3 +272,7 @@ jobs:
               --title "Home Hub $TAG" \
               --notes-file .github/release-notes.md \
             || gh release upload "$TAG" HomeHub.ipa --clobber
+
+      - name: Remove signing keychain
+        if: always() && steps.signing.outputs.enabled == 'true'
+        run: security delete-keychain "${{ steps.signing.outputs.keychain }}" || true

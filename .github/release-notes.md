@@ -22,8 +22,9 @@ landscape, two below 1150pt, one below 800pt.
 [SideStore](https://sidestore.io) re-signs it with your own Apple ID at install
 time, so there are no certificates to manage and nothing to configure.
 
-- AltServer runs on macOS 10.14.4 and later, so a Mac far too old for a current
-  Xcode can still install this.
+- AltStore needs **AltServer 1.7.6 or newer**, which requires macOS 11 or a
+  Windows PC. Since September 2026, Apple rejects sign-in from older AltServer
+  builds, including 1.6.2, the last one for macOS Catalina.
 - AltStore renews the 7-day signature over Wi-Fi while AltServer is running on
   the same network. For an iPad somewhere else, use SideStore, which refreshes
   on-device after a one-time pairing.
